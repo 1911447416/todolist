@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<head>
+    <link rel="stylesheet" type="text/css" href="./index.css" />
+
+    <style type="text/css">
+
+        .heading{
+            font-size: 25px;
+            text-align: center;
+        }
+        .note{
+            font-size: 30px;
+            margin-left: 100px;
+            margin-right: 100px;
+            padding: 5px;
+            border: 9px solid #8b7375;
+        }
+
+        .am-btn-success:hover{
+            background-color: #fb4030;
+            /*box-shadow: rgba(79, 40, 131, 0.29) 0px 2px 6px, rgba(0, 0, 0, 0.24) 0px 1px 2px;*/
+            color: white;
+        }
+        .am-btn-success{
+            font-size: 20px;
+            display: inline-block;
+            margin-top: 7px; /*上外边距*/
+            margin-bottom: 7px; /*下外边距*/
+            vertical-align: middle; /*设置元素的垂直对齐方式*/
+            color: black;/*文字颜色*/
+            background-color: rgba(200, 197, 151, 0);
+            text-align: center;/*text对齐方式*/
+            cursor: pointer;/*光标*/
+            border:1px solid white;/*外边框*/
+            font-family:'Microsoft YaHei UI Light';
+            /*border-width: initial;*/
+            /*border-style: none;*/
+            /*border-color: initial;*/
+            /*border-image: initial;*/
+            /*outline: 5px;*/
+            padding: 8px 20px;
+            overflow: auto;
+            text-decoration: none;
+            transition: all 0.2s ease-out 0s;
+            border-radius:10px;
+        }
+        body{
+            background: rgb(177, 173, 149);
+        }
+        input{
+
+            font-size: 25px;
+            outline-style:none;
+            border: 1px solid #cc651f;
+            padding: 7px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+
+
+
+<body>
+
+
+<img src="15.JPG" width="128" height="128" />
+
+
+{{/*标题*/}}
+<div class="heading">
+<span style="font-family: 'Microsoft YaHei UI Light';text-align:center;font-weight:300;font-size: 50px;letter-spacing:5px">便签本</span><span style="font-family: 'Times New Roman'">(testing)</span>
+</div>
+
+{{/*内容*/}}
+<div class="note">
+<ul class="am-list am-list-static">
+    {{range $index,$value := .items}}
+
+        {{if $value.IsDelete}}
+            <s>{{$value.Name}}</s>
+        {{else}}
+            <li>{{$value.Name}}
+                <a id="cha" type="button" class="am-btn am-btn-success" onclick="cha({{$index}})">修改</a>
+                <a id="del" type="button" class="am-btn am-btn-success" onclick="del({{$index}})">删除</a>
+            </li>
+        {{end}}
+    {{end}}
+</ul>
+</div>
+
+
+<form action="/add" method="GET" style="text-align: center;margin-top: 20px;">
+    <input type="text" name="name" placeholder="Write down something...">
+
+    <input type="submit">
+</form>
+
+
+    <p style="font-family:times;color:green;font-size:30px">
+        Thanks for your viewing.</p>
+
+</body>
+</html>
+
+
+<script>
+    function del(index) {
+        var txt;
+        if (confirm("确定删除？")) {
+            console.log(index);
+
+            console.log("js 发送get请求  准备删除元素");
+            var httpRequest = new XMLHttpRequest();//第一步：建立所需的对象
+            httpRequest.open('GET', '/delete?index='+index, true);//第二步：打开连接  将请求参数写在url中  ps:"./Ptest.php?name=test&nameone=testone"
+            httpRequest.send();//第三步：发送请求  将请求参数写在URL中
+
+
+
+
+            httpRequest.onreadystatechange = function () {
+                if (httpRequest.readyState == 4 && httpRequest.status == 200) {
+                    var ret = httpRequest.responseText;//获取到json字符串，还需解析
+                    console.log(ret);
+                    if (ret == "done") {
+                        window.location.href = "/";
+                    }
+                }
+            };
+            location.reload() //刷新页面
+        } else {
+
+        }
+
+
+    }
+
+    function cha(index) {
+        if (confirm("确定修改？")) {
+            var text = prompt("重命名为：", "");
+            alert("success!")
+            var httpRequest = new XMLHttpRequest();//第一步：建立所需的对象
+            httpRequest.open('GET', '/cha?index='+index+'&text='+text, true);//第二步：打开连接  将请求参数写在url中  ps:"./Ptest.php?name=test&nameone=testone"
+            httpRequest.send();//第三步：发送请求  将请求参数写在URL中
+
+
+
+
+            httpRequest.onreadystatechange = function () {
+                if (httpRequest.readyState == 4 && httpRequest.status == 200) {
+                    var ret = httpRequest.responseText;//获取到json字符串，还需解析
+                    console.log(ret);
+                    if (ret == "done") {
+                        window.location.href = "/";
+                    }
+                }
+            };
+            location.reload() //刷新页面
+        } else {
+
+        }
+
+
+
+
+    }
+
+</script>
